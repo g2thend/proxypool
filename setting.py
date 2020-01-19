@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/18/19 10:04 AM
 # @Author  : yon
-# @Email   : 201225144@qq.com
+# @Email   :  @qq.com
 # @File    : setting
 
 # Sqlite3数据库名称
@@ -27,7 +27,7 @@ TESTER_CYCLE = 20
 GETTER_CYCLE = 300
 
 # 测试API，建议抓哪个网站测哪个
-TEST_URL = 'http://httpbin.org/get'
+TEST_URL = 'http://www.net.cn/static/customercare/yourip.asp'
 
 # 开关
 TESTER_ENABLED = True

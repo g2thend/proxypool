@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/18/19 10:19 AM
 # @Author  : yon
-# @Email   : 201225144@qq.com
+# @Email   : @qq.com
 # @File    : db.py
 
 from proxypool.error import PoolEmptyError
 from proxypool.setting import proxyDbName, proxyDbPath
 from proxypool.setting import MAX_SCORE, MIN_SCORE, INITIAL_SCORE, PROTOCOL
 from random import choice
+from proxypool.utils import cprint
 import re
 import os
 import sqlite3
@@ -46,10 +47,10 @@ class sqlitedb(object):
                 c.execute('''CREATE TABLE proxy(id  INTEGER  PRIMARY KEY AUTOINCREMENT NOT NULL,ipport  TEXT NOT NULL ,protocol  TEXT NOT NULL, score INTEGER NOT NULL DEFAULT 100 ,UNIQUE(ipport, protocol))''')
                 conn.commit()
                 conn.close()
-                print("pls get proxy ip to insert to the db ")
+                cprint("pls get proxy ip to insert to the db ", color="red")
                 return True
             except IOError:
-                print("no proxydb !!")
+                cprint("no proxydb !!", color="red")
         else:
             #后续添加检测是否存在proxy表
             return True
@@ -61,7 +62,7 @@ class sqlitedb(object):
         :rtype: object
         """
         if not self.dbCreated:
-            print("数据库不存在,请在setting检查数据库路径,并执行checkdbexist．．．．")
+            cprint("数据库不存在,请在setting检查数据库路径,并执行checkdbexist．．．．", color="red")
             return False
         else:
             try:
@@ -70,7 +71,7 @@ class sqlitedb(object):
                     c = conn.execute('INSERT INTO proxy(ipport, protocol)  VALUES (?,?)', proxy)
                     conn.commit()
                     conn.close()
-                    print("success: add proxy ip  into db !!")
+                    cprint("success: add proxy ip  into db !!")
                     return True
 
             except Exception:
@@ -98,21 +99,20 @@ class sqlitedb(object):
                     # print(choice(list))
                     return choice(list)
                 else:
-                    print("执行了else")
                     getRandom = c.execute('''select  ipport,protocol from proxy where score>80''')
                     list = getRandom.fetchall()
                     if list:
                         return choice(list)
                     else:
-                        print("no ip where score > 80 ")
+                        cprint("no ip where score > 80 ", color="red")
                 conn.close()
             except Exception as ex:
                 print(type(ex))
-                print("get random proxy  fail!!")
+                cprint("get random proxy  fail!!", color="red")
             finally:
                 conn.close()
         else:
-            print("no proxydb plse check...")
+            cprint("no proxydb plse check...", color="red")
 
     def decrease(self, proxy):
         """
@@ -126,7 +126,7 @@ class sqlitedb(object):
                 c = conn.cursor()
                 score = c.execute(selectip).fetchall()[0][0]
                 if score and score > MIN_SCORE:
-                    print('代理', proxy, '当前分数', score, '减1')
+                    print(proxy, '当前分数', score, '减1')
                     xx = (score - 1, proxy)
                     c.execute('UPDATE proxy set score=?  WHERE ipport=?', xx)
                     print("update proxy:%s fromscore:%s  toscore:%s successfull!!" % (proxy, score, score-1))

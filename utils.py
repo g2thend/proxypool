@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/19/19 4:01 PM
 # @Author  : yon
-# @Email   : 201225144@qq.com
+# @Email   :  @qq.com
 # @File    : utils
 
 import requests
@@ -32,3 +32,21 @@ def get_page(url, options={}):
     except ConnectionError:
         print('抓取失败', url)
         return None
+
+
+def cprint(text, color="green"):
+    if text is None:
+        print("\033[1;31m%s \033[0m" % "no text to print")
+        return
+    if color == "green":
+        print("\033[1;32m%s \033[0m" % text)
+    elif color == "red":
+        print("\033[1;31m%s \033[0m" % text)
+    elif color == "yellow":
+        print("\033[1;33m%s \033[0m" % text)
+    elif color == "blue":
+        print("\033[1;34m%s \033[0m" % text)
+
+
+if __name__ == '__main__':
+    cprint("skskskks")

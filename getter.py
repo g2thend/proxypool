@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/20/19 9:30 AM
 # @Author  : yon
-# @Email   : 201225144@qq.com
+# @Email   :  @qq.com
 # @File    : getter
 
 from proxypool.db import sqlitedb
 from proxypool.crawler import Crawler
 from proxypool.setting import *
+from proxypool.utils import cprint
 import sys
 import time
 
@@ -17,13 +18,13 @@ class Getter(object):
         self.sqlite3 = sqlitedb()
         self.crawler = Crawler()
     def run(self):
-        print('获取器开始执行')
+        cprint('获取器开始执行')
         for callback_label in range(self.crawler.__CrawlFuncCount__):
             callback = self.crawler.__CrawlFunc__[callback_label]
             # 获取代理
             proxies = self.crawler.get_proxies(callback)
             sys.stdout.flush()
-            print("插入数据到sqlite3 proxy 表")
+            cprint("插入数据到sqlite3 proxy 表")
             for proxy in proxies:
                 self.sqlite3.add(list(proxy))
 

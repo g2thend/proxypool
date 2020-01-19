@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/20/19 2:19 PM
 # @Author  : yon
-# @Email   : 201225144@qq.com
+# @Email   :  @qq.com
 # @File    : imorter
 
 # 手动录入代理

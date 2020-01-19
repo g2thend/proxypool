@@ -1,7 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 12/18/19 10:19 AM
+# @Author  : yon
+# @Email   : @qq.com
+# @File    : db.py
+
 import json
 import re
 from pyquery import PyQuery as pq
 from proxypool.utils import get_page
+from proxypool.utils import cprint
 
 class ProxyMetaclass(type):
     def __new__(cls, name, bases, attrs):
@@ -19,7 +27,7 @@ class Crawler(object, metaclass=ProxyMetaclass):
     def get_proxies(self, callback):
         proxies = []
         for proxy in eval("self.{}()".format(callback)):
-            print('成功获取到代理', proxy)
+            cprint("成功获取到代理:" + str(proxy))
             proxies.append(proxy)
         return proxies
 
@@ -99,6 +107,56 @@ class Crawler(object, metaclass=ProxyMetaclass):
                         tmp = (address_port, protocol)
                         yield tmp
 
+    def crawl_iphai(self):
+        start_url = 'http://www.iphai.com/free/wg'
+        html = get_page(start_url)
+        if html:
+            find_tr = re.compile('<tr>(.*?)</tr>', re.S)
+            trs = find_tr.findall(html)
+            for s in range(1, len(trs)):
+                find_ip = re.compile('<td>\s+(\d+\.\d+\.\d+\.\d+)\s+</td>', re.S)
+                re_ip_address = find_ip.findall(trs[s])
+                find_port = re.compile('<td>\s+(\d+)\s+</td>', re.S)
+                re_port = find_port.findall(trs[s])
+                find_protocol = re.compile('<td>(.*?)</td>\s+<td>(.*?)</td>\s+<td>(.*?)</td>\s+<td>(.*?)</td>', re.S)
+                re_pro = find_protocol.findall(trs[s])
+                if re_pro[0][3].strip() == '':
+                    re_pro = ["HTTP"]
+                else:
+                    re_pro = ["HTTPS"]
+                for address, port, protocol in zip(re_ip_address, re_port, re_pro):
+                    address_port = address + ':' + port
+                    tmp = (address_port, protocol)
+                    yield tmp
+
+    # def crawl_xiladaili(self):
+    # http://www.xiladaili.com/gaoni/  西拉免费代理
+    # 网页获取的代理和通过程序获取的端口不一致,通过程序获取的端口是错误的
+    # def crawl_data5u(self):
+    #     headers = {
+    #         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    #         'Accept-Encoding': 'gzip, deflate',
+    #         'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+    #         'Cache-Control': 'max-age=0',
+    #         'Connection': 'keep-alive',
+    #         'Cookie': 'JSESSIONID=9C634C0DD99CB36A015698522C16C57F',
+    #         'Host': 'www.data5u.com',
+    #         'Referer': 'http://www.data5u.com/',
+    #         'Upgrade-Insecure-Requests': '1',
+    #         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'}
+    #     req = requests.get("http://www.data5u.com/", headers=headers)
+    #     soup = BeautifulSoup(req.text, 'lxml')
+    #     uls = soup.select('ul .l2')
+    #     for i in uls:
+    #         li = i.get_text().split(sep='\n')
+    #         proxy_ip = li[1]
+    #         proxy_port = li[2]
+    #         proxy_type = li[3]
+    #         proxy_pro = li[4]
+    #         address_port = proxy_ip + ':' + proxy_port
+    #         tmp = (address_port, proxy_pro)
+    #         yield tmp
+
     # def crawl_iphai(self):
     #     start_url = 'http://www.iphai.com/'
     #     html = get_page(start_url)
@@ -158,12 +216,7 @@ class Crawler(object, metaclass=ProxyMetaclass):
 
 if __name__ == '__main__':
     get = Crawler()
-    page = 1
-    # get.crawl_ip3366()
-    # # proxies = get.crawl_iphai()
-    # # for proxy in proxies:
-    # #     print(proxy)
-    proxies = get.crawl_xicidaili()
+    proxies = get.crawl_data5u()
     # proxies <generator object Crawler.crawl_xicidaili at 0x7fa4f1edf410>
     # 为生成器,不能直接打印,需要展开来进行合并,然后组成元组,内容为列表,然后保存
     for proxy in proxies:
